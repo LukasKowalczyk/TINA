@@ -4,8 +4,11 @@ import de.tina.apprentice.Apprentice;
 import de.tina.master.Master;
 
 public class Start {
+	
 	private static final String SOURCE_PATH = "D:\\";
+	
 	private static final boolean PRE_FILTER = false;
+	
 	private static final int SUCCES_QUOTA = 90;
 
 	/**
