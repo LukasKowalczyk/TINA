@@ -1,18 +1,51 @@
 package de.tina.knowledge;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 
 public class Analyser {
 	private static Analyser analyise;
 
-	private String sentenceSeperator = "[\\.\\?\\!]";
+	private String[] stopwords;
 
-	private String replaceSymbols = "[\",]";
+	private String sentenceSeperator = "";
+
+	private String stopWordsAndSymbols = "\",";
 
 	private Analyser() {
+		loadSentenceSeperator();
+		loadStopWords();
+	}
+
+	private void loadSentenceSeperator() {
+		try {
+			List<String> terminalsymbols = Files.readAllLines(new File("terminalsymbols").toPath());
+			for (String terminalsymbol : terminalsymbols) {
+				sentenceSeperator += terminalsymbol;
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		sentenceSeperator = "[" + sentenceSeperator + "]";
+	}
+
+	
+	private void loadStopWords() {
+		try {
+			@SuppressWarnings("deprecation")
+			List<String> stopwords = FileUtils.readLines(new File("stopwords"));
+			this.stopwords = stopwords.toArray(new String[stopwords.size()]);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		stopWordsAndSymbols = "[" + stopWordsAndSymbols + "]";
 	}
 
 	public static Analyser getInstance() {
@@ -20,19 +53,22 @@ public class Analyser {
 			analyise = new Analyser();
 		}
 		return analyise;
+
 	}
 
 	/*
 	 * Replace every "[",]".<br> Splits the text by sentence "[\.\?\!]" and the
 	 * sentence after that by SPACE.
+	 * 
 	 * @param text
+	 * 
 	 * @return the text splited by sentence and words
 	 */
 	private List<String[]> splitText(String text) {
 		List<String[]> out = new ArrayList<String[]>();
 		text = text.toLowerCase();
 		// Delete each "," and "\""
-		text = text.replaceAll(replaceSymbols, "");
+		text = text.replaceAll(stopWordsAndSymbols, "");
 
 		// Split sentence after seperator for example ".", "!" or "?" and
 		// so on.
@@ -43,6 +79,12 @@ public class Analyser {
 		for (String s : sentences) {
 			String[] words = s.split(" ");
 			words = (String[]) ArrayUtils.removeElement(words, StringUtils.EMPTY);
+			for (String word : words) {
+				if (ArrayUtils.contains(stopwords, word)) {
+					words = (String[]) ArrayUtils.removeElement(words, word);
+				}
+			}
+
 			out.add(words);
 
 		}
@@ -51,6 +93,7 @@ public class Analyser {
 
 	/**
 	 * Fill the KnowledgeBase with the words
+	 * 
 	 * @param splitedText
 	 * @param knowledgeBase
 	 * @return the filled KnowledgeBase
@@ -70,6 +113,7 @@ public class Analyser {
 
 	/**
 	 * Fill the KnowledgeBase with the words
+	 * 
 	 * @param splitedText
 	 * @param knowledgeBase
 	 * @return the filled KnowledgeBase
@@ -91,6 +135,7 @@ public class Analyser {
 
 	/**
 	 * extract the vocabulary of the text.
+	 * 
 	 * @param text
 	 * @return the vocabulary
 	 */
@@ -102,8 +147,8 @@ public class Analyser {
 		List<String[]> splitedText = splitText(text);
 		for (String[] words : splitedText) {
 			for (String word : words) {
-				// We add only unknown words
-				if (ArrayUtils.indexOf(vocabulary, word) < 0) {
+				// We add only unknown words AND no stopwords
+				if (ArrayUtils.indexOf(vocabulary, word) < 0 && !ArrayUtils.contains(stopwords, word)) {
 					vocabulary = (String[]) ArrayUtils.add(vocabulary, word);
 				}
 			}

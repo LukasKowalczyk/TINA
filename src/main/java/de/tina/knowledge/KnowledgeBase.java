@@ -167,6 +167,7 @@ public class KnowledgeBase {
 
 	/**
 	 * saves this object as a JSON-File
+	 * 
 	 * @param jsonFile
 	 */
 	public void persist(File jsonFile) {
@@ -180,6 +181,7 @@ public class KnowledgeBase {
 
 	/**
 	 * loads a JSON-File
+	 * 
 	 * @param jsonFile
 	 * @return the mapped JSON-File
 	 */
@@ -197,6 +199,7 @@ public class KnowledgeBase {
 
 	/**
 	 * Generate a string for a print
+	 * 
 	 * @return a string for a print
 	 */
 	public String print() {
@@ -223,5 +226,58 @@ public class KnowledgeBase {
 	 */
 	public int getMax() {
 		return max;
+	}
+
+	public void append(KnowledgeBase knowledgeBase) {
+		max += knowledgeBase.getMax();
+		adjiazenMatrix = appentMatrix(knowledgeBase, appendVocabulary(knowledgeBase.getVocabulary()));
+	}
+
+	private String[] appendVocabulary(String[] vocabulary) {
+		String[] out = this.vocabulary;
+		for (String word : vocabulary) {
+			if (!ArrayUtils.contains(this.vocabulary, word)) {
+				ArrayUtils.add(out, word);
+			}
+		}
+		return null;
+	}
+
+	private int indexOfWordInVocabular(String[] vocabulary, String word) {
+		return ArrayUtils.indexOf(vocabulary, word);
+	}
+
+	private int[][] appentMatrix(KnowledgeBase newKnowledgeBase, String[] newVocabulary) {
+		// Witch array is greater
+		int newLength = newVocabulary.length;
+		int[][] out = new int[newLength][newLength];
+		int[][] newAdjiazenMatrix = newKnowledgeBase.getAdjiazenMatrix();
+
+		for (int i = 0; i < newVocabulary.length; i++) {
+			//Get i position of the word in each vocabulary
+			int iOfNewVocabulary = ArrayUtils.indexOf(newKnowledgeBase.getVocabulary(), newVocabulary[i]);
+			int iOfOldVocabulary = ArrayUtils.indexOf(vocabulary, newVocabulary[i]);
+
+			for (int j = 0; j < newLength; j++) {
+				//Get j position of the word in each vocabulary
+				int jOfNewVocabulary = ArrayUtils.indexOf(newKnowledgeBase.getVocabulary(), newVocabulary[j]);
+				int jOfOldVocabulary = ArrayUtils.indexOf(vocabulary, newVocabulary[j]);
+				//Compare if there is a word in the old matrix
+				int oldField = 0;
+				if (iOfOldVocabulary >= 0 && jOfOldVocabulary >= 0) {
+					oldField = adjiazenMatrix[iOfOldVocabulary][jOfOldVocabulary];
+				}
+				//Compare if there is a word in the new matrix
+				int newField = 0;
+				if (iOfNewVocabulary >= 0 && jOfNewVocabulary >= 0) {
+					newField = newAdjiazenMatrix[iOfNewVocabulary][jOfNewVocabulary];
+				}
+				//now save it in the output matrix
+				out[i][j] = oldField + newField;
+			}
+		}
+		//After that we save the new vocabulary
+		vocabulary=newVocabulary;
+		return out;
 	}
 }

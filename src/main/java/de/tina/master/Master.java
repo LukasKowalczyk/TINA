@@ -1,6 +1,7 @@
 package de.tina.master;
 
 import java.io.File;
+import java.security.KeyStore.Entry;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -37,18 +38,56 @@ public class Master {
 
 	/**
 	 * ask the master what the text is.
+	 * 
 	 * @param text
 	 */
 	public Map<String, Integer> ask(String text) {
 		System.out.println(">" + text + "<");
 		Map<String, Integer> themes = think(text);
-		if (themes.isEmpty()) {
-			System.out.println("I can't assign >" + text + "<");
-		}
-		for (String key : themes.keySet()) {
-			System.out.println("I know that >" + text + "< is " + themes.get(key) + "% >" + key + "<");
+
+		// Here we analyse if there is for example a 50:50 Hit.
+		// if thats the the case we must generate a new KnowladgeBase
+		boolean specialCase = isThisASpecialCase(themes);
+		if (specialCase) {
+			themes = generateNewKnowledgeBase(themes);
 		}
 		return themes;
+	}
+
+	private Map<String, Integer> generateNewKnowledgeBase(Map<String, Integer> themes) {
+		Map<String, Integer> out = new HashMap<>();
+		// generate a new name for the knowledgeBase
+		String newName = generateNewName(themes);
+		KnowledgeBase newKnowledgeBase = new KnowledgeBase(newName);
+		for (String key : themes.keySet()) {
+			newKnowledgeBase.append(knowledge.get(key));
+		}
+		out.put(newName, 100);
+		return out;
+	}
+
+	private KnowledgeBase appendKnowledgeBase(KnowledgeBase newKnowledgeBase, KnowledgeBase knowledgeBase) {
+		;
+		return newKnowledgeBase;
+	}
+
+	private String generateNewName(Map<String, Integer> themes) {
+		String newName = "";
+		for (String key : themes.keySet()) {
+			newName += key;
+		}
+		return newName;
+	}
+
+	private boolean isThisASpecialCase(Map<String, Integer> themes) {
+		int quota = 0;
+		for (int value : themes.values()) {
+			quota += value;
+		}
+		if (quota == 100 && themes.size() > 1) {
+			return true;
+		}
+		return false;
 	}
 
 	private Map<String, Integer> think(String text) {
@@ -68,10 +107,27 @@ public class Master {
 				// Percent of the matching of the knowledgeBases
 				int erg = compareMatrix(newKnowledgeBase.getAdjiazenMatrix(), knowledgeBase.getAdjiazenMatrix(),
 						newKnowledgeBase.getMax());
-				out.put(knowledgeBase.getName(), erg);
+				// Only themes that are greater than 0%
+				if (erg > 0) {
+					out.put(knowledgeBase.getName(), erg);
+				}
 			}
 		}
+		if (out.isEmpty()) {
+			System.out.println("I can't assign >" + text + "<");
+			return new HashMap<String, Integer>();
+		}
+		// When we don't want the Realtive Probability in our Hits
+		calculateRelativProbability(out);
 		return out;
+	}
+
+	private void calculateRelativProbability(Map<String, Integer> out) {
+		for (String key : out.keySet()) {
+			if (out.get(key) > 0) {
+				out.put(key, out.get(key) / out.keySet().size());
+			}
+		}
 	}
 
 	private int compareMatrix(int[][] matrixToProve, int[][] possibleMatrix, int maxHits) {
