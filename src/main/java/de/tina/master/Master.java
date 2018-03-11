@@ -49,6 +49,7 @@ public class Master {
 	 * 
 	 * @param text
 	 */
+	@SuppressWarnings("deprecation")
 	public Map<String, Integer> ask(String text) {
 		System.out.println(">" + text + "<");
 		Map<String, Integer> themes = think(text);
