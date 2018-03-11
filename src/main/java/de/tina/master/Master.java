@@ -1,13 +1,18 @@
 package de.tina.master;
 
 import java.io.File;
-import java.security.KeyStore.Entry;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.RandomStringUtils;
+import org.apache.commons.lang.StringUtils;
+
 import de.tina.knowledge.Analyser;
 import de.tina.knowledge.KnowledgeBase;
 import de.tina.knowledge.Memory;
@@ -22,6 +27,8 @@ public class Master {
 
 	private Memory memory = Memory.getInstance();
 
+	private String sourcePath;
+
 	private Map<String, KnowledgeBase> knowledge;
 
 	/**
@@ -32,6 +39,7 @@ public class Master {
 	public Master(String sourcePath, boolean preFilter, int succesQuota) {
 		this.preFilter = preFilter;
 		this.succesQuota = succesQuota;
+		this.sourcePath = sourcePath;
 		knowledge = memory.remember(new File(sourcePath));
 
 	}
@@ -49,34 +57,15 @@ public class Master {
 		// if thats the the case we must generate a new KnowladgeBase
 		boolean specialCase = isThisASpecialCase(themes);
 		if (specialCase) {
-			themes = generateNewKnowledgeBase(themes);
+			// this text must be checked what this is
+			try {
+				FileUtils.writeStringToFile(new File(sourcePath, RandomStringUtils.randomAlphanumeric(6) + ".txt"),
+						text);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 		return themes;
-	}
-
-	private Map<String, Integer> generateNewKnowledgeBase(Map<String, Integer> themes) {
-		Map<String, Integer> out = new HashMap<>();
-		// generate a new name for the knowledgeBase
-		String newName = generateNewName(themes);
-		KnowledgeBase newKnowledgeBase = new KnowledgeBase(newName);
-		for (String key : themes.keySet()) {
-			newKnowledgeBase.append(knowledge.get(key));
-		}
-		out.put(newName, 100);
-		return out;
-	}
-
-	private KnowledgeBase appendKnowledgeBase(KnowledgeBase newKnowledgeBase, KnowledgeBase knowledgeBase) {
-		;
-		return newKnowledgeBase;
-	}
-
-	private String generateNewName(Map<String, Integer> themes) {
-		String newName = "";
-		for (String key : themes.keySet()) {
-			newName += key;
-		}
-		return newName;
 	}
 
 	private boolean isThisASpecialCase(Map<String, Integer> themes) {

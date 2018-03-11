@@ -237,14 +237,10 @@ public class KnowledgeBase {
 		String[] out = this.vocabulary;
 		for (String word : vocabulary) {
 			if (!ArrayUtils.contains(this.vocabulary, word)) {
-				ArrayUtils.add(out, word);
+				out = (String[]) ArrayUtils.add(out, word);
 			}
 		}
-		return null;
-	}
-
-	private int indexOfWordInVocabular(String[] vocabulary, String word) {
-		return ArrayUtils.indexOf(vocabulary, word);
+		return out;
 	}
 
 	private int[][] appentMatrix(KnowledgeBase newKnowledgeBase, String[] newVocabulary) {
@@ -254,30 +250,30 @@ public class KnowledgeBase {
 		int[][] newAdjiazenMatrix = newKnowledgeBase.getAdjiazenMatrix();
 
 		for (int i = 0; i < newVocabulary.length; i++) {
-			//Get i position of the word in each vocabulary
+			// Get i position of the word in each vocabulary
 			int iOfNewVocabulary = ArrayUtils.indexOf(newKnowledgeBase.getVocabulary(), newVocabulary[i]);
 			int iOfOldVocabulary = ArrayUtils.indexOf(vocabulary, newVocabulary[i]);
 
 			for (int j = 0; j < newLength; j++) {
-				//Get j position of the word in each vocabulary
+				// Get j position of the word in each vocabulary
 				int jOfNewVocabulary = ArrayUtils.indexOf(newKnowledgeBase.getVocabulary(), newVocabulary[j]);
 				int jOfOldVocabulary = ArrayUtils.indexOf(vocabulary, newVocabulary[j]);
-				//Compare if there is a word in the old matrix
+				// Compare if there is a word in the old matrix
 				int oldField = 0;
 				if (iOfOldVocabulary >= 0 && jOfOldVocabulary >= 0) {
 					oldField = adjiazenMatrix[iOfOldVocabulary][jOfOldVocabulary];
 				}
-				//Compare if there is a word in the new matrix
+				// Compare if there is a word in the new matrix
 				int newField = 0;
 				if (iOfNewVocabulary >= 0 && jOfNewVocabulary >= 0) {
 					newField = newAdjiazenMatrix[iOfNewVocabulary][jOfNewVocabulary];
 				}
-				//now save it in the output matrix
+				// now save it in the output matrix
 				out[i][j] = oldField + newField;
 			}
 		}
-		//After that we save the new vocabulary
-		vocabulary=newVocabulary;
+		// After that we save the new vocabulary
+		vocabulary = newVocabulary;
 		return out;
 	}
 }
