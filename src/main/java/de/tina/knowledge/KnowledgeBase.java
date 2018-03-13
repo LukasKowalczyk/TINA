@@ -16,7 +16,7 @@ public class KnowledgeBase {
 	private int[][] adjiazenMatrix;
 
 	/**
-	 * @param theme
+	 * @param name
 	 */
 	public KnowledgeBase(String name) {
 		this.max = 0;
@@ -26,7 +26,7 @@ public class KnowledgeBase {
 	}
 
 	/**
-	 * @param theme
+	 * @param name
 	 * @param vocabulary
 	 */
 	public KnowledgeBase(String name, String[] vocabulary) {
@@ -37,7 +37,7 @@ public class KnowledgeBase {
 	}
 
 	/**
-	 * @return the brainAreaName
+	 * @return the name
 	 */
 	public String getName() {
 		return name;
@@ -77,7 +77,7 @@ public class KnowledgeBase {
 	}
 
 	/**
-	 * Add the two new words to the knowledgeBase and generate a 
+	 * Add the two new words to the knowledgeBase and generate a input into the matrix
 	 * @param word
 	 * @param follower
 	 */
