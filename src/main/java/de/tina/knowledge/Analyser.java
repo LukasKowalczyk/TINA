@@ -103,8 +103,6 @@ public class Analyser {
 	 * Replace every "[",]".<br> Splits the text by sentence "[\.\?\!]" and the
 	 * sentence after that by SPACE.
 	 * 
-	 * @param text
-	 * 
 	 * @return the text splited by sentence and words
 	 */
 	private List<String[]> splitText(String text) {
