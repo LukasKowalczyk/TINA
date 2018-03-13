@@ -1,12 +1,9 @@
 package de.tina.knowledge;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.Arrays;
-import org.apache.commons.io.FileUtils;
+
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
-import com.google.gson.Gson;
 
 public class KnowledgeBase {
 
@@ -60,23 +57,15 @@ public class KnowledgeBase {
 		return adjiazenMatrix;
 	}
 
-	// appent matrix by one row and one cole
-	private int[][] appentToMatrix(int[][] adjiazenMatrix) {
-		int newLength = adjiazenMatrix.length + 1;
-		int[][] newMatrix = new int[newLength][newLength];
-		for (int i = 0; i < newLength; i++) {
-			for (int j = 0; j < newLength; j++) {
-				int wert = 0;
-				if (i < adjiazenMatrix.length && j < adjiazenMatrix.length) {
-					wert = adjiazenMatrix[i][j];
-				}
-				newMatrix[i][j] = wert;
-			}
-		}
-		return newMatrix;
+	/**
+	 * @return the max
+	 */
+	public int getMax() {
+		return max;
 	}
 
 	/**
+	 * Add a new word to the knowledgeBase
 	 * 
 	 * @param word
 	 */
@@ -88,7 +77,7 @@ public class KnowledgeBase {
 	}
 
 	/**
-	 * 
+	 * Add the two new words to the knowledgeBase and generate a 
 	 * @param word
 	 * @param follower
 	 */
@@ -101,19 +90,6 @@ public class KnowledgeBase {
 			adjiazenMatrix[indexWord][indexFollower] -= 1;
 		}
 		this.max = maxOfMatrix();
-	}
-
-	// the sum of all hit-fields of the matrix
-	private int maxOfMatrix() {
-		int countHits = 0;
-		for (int i = 0; i < adjiazenMatrix.length; i++) {
-			for (int j = 0; j < adjiazenMatrix[i].length; j++) {
-				if (adjiazenMatrix[i][j] != 0) {
-					countHits += adjiazenMatrix[i][j];
-				}
-			}
-		}
-		return countHits;
 	}
 
 	@Override
@@ -161,45 +137,12 @@ public class KnowledgeBase {
 			matrix += Arrays.toString(is) + ", ";
 		}
 		matrix += "]";
-		return "BrainAreaPojo [name=" + name + ", vocabulary=" + Arrays.toString(vocabulary) + ", adjiazenMatrix="
+		return "KnowledgeBase [name=" + name + ", vocabulary=" + Arrays.toString(vocabulary) + ", adjiazenMatrix="
 				+ matrix + "]";
 	}
 
 	/**
-	 * saves this object as a JSON-File
-	 * 
-	 * @param jsonFile
-	 */
-	public void persist(File jsonFile) {
-		// Here the json file must be written
-		try {
-			FileUtils.writeByteArrayToFile(jsonFile, new Gson().toJson(this).getBytes(), false);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-
-	/**
-	 * loads a JSON-File
-	 * 
-	 * @param jsonFile
-	 * @return the mapped JSON-File
-	 */
-	public static KnowledgeBase load(File jsonFile) {
-		// Here the json file must be written
-		try {
-			String inhalt = new String(FileUtils.readFileToByteArray(jsonFile));
-			KnowledgeBase bareaPojo = new Gson().fromJson(inhalt, KnowledgeBase.class);
-			return bareaPojo;
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
-
-	/**
 	 * Generate a string for a print
-	 * 
 	 * @return a string for a print
 	 */
 	public String print() {
@@ -221,59 +164,32 @@ public class KnowledgeBase {
 		return header + ajinmatrix;
 	}
 
-	/**
-	 * @return the max
-	 */
-	public int getMax() {
-		return max;
-	}
-
-	public void append(KnowledgeBase knowledgeBase) {
-		max += knowledgeBase.getMax();
-		adjiazenMatrix = appentMatrix(knowledgeBase, appendVocabulary(knowledgeBase.getVocabulary()));
-	}
-
-	private String[] appendVocabulary(String[] vocabulary) {
-		String[] out = this.vocabulary;
-		for (String word : vocabulary) {
-			if (!ArrayUtils.contains(this.vocabulary, word)) {
-				out = (String[]) ArrayUtils.add(out, word);
-			}
-		}
-		return out;
-	}
-
-	private int[][] appentMatrix(KnowledgeBase newKnowledgeBase, String[] newVocabulary) {
-		// Witch array is greater
-		int newLength = newVocabulary.length;
-		int[][] out = new int[newLength][newLength];
-		int[][] newAdjiazenMatrix = newKnowledgeBase.getAdjiazenMatrix();
-
-		for (int i = 0; i < newVocabulary.length; i++) {
-			// Get i position of the word in each vocabulary
-			int iOfNewVocabulary = ArrayUtils.indexOf(newKnowledgeBase.getVocabulary(), newVocabulary[i]);
-			int iOfOldVocabulary = ArrayUtils.indexOf(vocabulary, newVocabulary[i]);
-
+	// appent matrix by one row and one cole
+	private int[][] appentToMatrix(int[][] adjiazenMatrix) {
+		int newLength = adjiazenMatrix.length + 1;
+		int[][] newMatrix = new int[newLength][newLength];
+		for (int i = 0; i < newLength; i++) {
 			for (int j = 0; j < newLength; j++) {
-				// Get j position of the word in each vocabulary
-				int jOfNewVocabulary = ArrayUtils.indexOf(newKnowledgeBase.getVocabulary(), newVocabulary[j]);
-				int jOfOldVocabulary = ArrayUtils.indexOf(vocabulary, newVocabulary[j]);
-				// Compare if there is a word in the old matrix
-				int oldField = 0;
-				if (iOfOldVocabulary >= 0 && jOfOldVocabulary >= 0) {
-					oldField = adjiazenMatrix[iOfOldVocabulary][jOfOldVocabulary];
+				int wert = 0;
+				if (i < adjiazenMatrix.length && j < adjiazenMatrix.length) {
+					wert = adjiazenMatrix[i][j];
 				}
-				// Compare if there is a word in the new matrix
-				int newField = 0;
-				if (iOfNewVocabulary >= 0 && jOfNewVocabulary >= 0) {
-					newField = newAdjiazenMatrix[iOfNewVocabulary][jOfNewVocabulary];
-				}
-				// now save it in the output matrix
-				out[i][j] = oldField + newField;
+				newMatrix[i][j] = wert;
 			}
 		}
-		// After that we save the new vocabulary
-		vocabulary = newVocabulary;
-		return out;
+		return newMatrix;
+	} 
+	
+	// the sum of all hit-fields of the matrix
+	private int maxOfMatrix() {
+		int countHits = 0;
+		for (int i = 0; i < adjiazenMatrix.length; i++) {
+			for (int j = 0; j < adjiazenMatrix[i].length; j++) {
+				if (adjiazenMatrix[i][j] != 0) {
+					countHits += adjiazenMatrix[i][j];
+				}
+			}
+		}
+		return countHits;
 	}
 }

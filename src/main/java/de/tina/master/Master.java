@@ -2,13 +2,13 @@ package de.tina.master;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.RandomStringUtils;
 
@@ -48,19 +48,17 @@ public class Master {
 	 * 
 	 * @param text
 	 */
-	@SuppressWarnings("deprecation")
 	public Map<String, Integer> ask(String text) {
-		System.out.println(">" + text + "<");
 		Map<String, Integer> themes = think(text);
 
 		// Here we analyse if there is for example a 50:50 Hit.
 		// if thats the the case we must generate a new KnowladgeBase
 		boolean specialCase = isThisASpecialCase(themes);
-		if (specialCase) {
+		if (specialCase || themes.isEmpty()) {
 			// this text must be checked what this is
 			try {
-				FileUtils.writeStringToFile(new File(sourcePath, RandomStringUtils.randomAlphanumeric(6) + ".txt"),
-						text);
+				text = new String(Files
+						.readAllBytes(new File(sourcePath, RandomStringUtils.randomAlphanumeric(6) + ".txt").toPath()));
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -107,17 +105,17 @@ public class Master {
 			return new HashMap<String, Integer>();
 		}
 		// When we don't want the Realtive Probability in our Hits
-		calculateRelativProbability(out);
+		// calculateRelativProbability(out);
 		return out;
 	}
 
-	private void calculateRelativProbability(Map<String, Integer> out) {
-		for (String key : out.keySet()) {
-			if (out.get(key) > 0) {
-				out.put(key, out.get(key) / out.keySet().size());
-			}
-		}
-	}
+	// private void calculateRelativProbability(Map<String, Integer> out) {
+	// for (String key : out.keySet()) {
+	// if (out.get(key) > 0) {
+	// out.put(key, out.get(key) / out.keySet().size());
+	// }
+	// }
+	// }
 
 	private int compareMatrix(int[][] matrixToProve, int[][] possibleMatrix, int maxHits) {
 		int countHits = 0;
