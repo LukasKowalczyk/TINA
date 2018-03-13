@@ -37,7 +37,6 @@ public class MemoryTest {
 	public void persist() {
 		setUpBefore();
 		Memory memory = Memory.getInstance();
-
 		memory.persist(knowledge, TEST_SOURCER_PATH);
 		assertEquals(TEST_SOURCER_PATH.list(new JsonFilenameFilter()).length, 2);
 		tearDownAfter();
