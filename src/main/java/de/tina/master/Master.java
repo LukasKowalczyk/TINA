@@ -44,9 +44,10 @@ public class Master {
 	}
 
 	/**
-	 * ask the master what the text is.
+	 * Ask the master what the text is.
 	 * 
 	 * @param text
+	 * @return a map of hits what kind of themes the text is with the percents of hit
 	 */
 	public Map<String, Integer> ask(String text) {
 		Map<String, Integer> themes = think(text);

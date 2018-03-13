@@ -24,7 +24,7 @@ public class Apprentice {
 	}
 
 	/**
-	 * teach the apprentice that this text is this theme
+	 * Teach the apprentice that this text is this theme
 	 * 
 	 * @param text
 	 * @param theme
