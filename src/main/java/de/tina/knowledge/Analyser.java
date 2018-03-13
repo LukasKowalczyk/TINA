@@ -55,7 +55,7 @@ public class Analyser {
 	}
 
 	/**
-	 * extract the vocabulary of the text.
+	 * Extract the vocabulary of the text.
 	 * 
 	 * @param text
 	 * @return the vocabulary
