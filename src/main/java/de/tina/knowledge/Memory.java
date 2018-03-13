@@ -24,6 +24,13 @@ public class Memory {
 		return memory;
 	}
 
+	/**
+	 * Loads the knowledge of the sourcePath
+	 * 
+	 * @param sourcePath
+	 * @return a Map with the Name of the knowledgeBase as Key an the
+	 *         knowledgeBase as Value
+	 */
 	public Map<String, KnowledgeBase> remember(File sourcePath) {
 		Map<String, KnowledgeBase> knowledge = new HashMap<>();
 		// load every JSON-File
@@ -38,7 +45,10 @@ public class Memory {
 	}
 
 	/**
-	 * lets persist our knowledge
+	 * Lets persist our knowledge into the sourcePath
+	 * 
+	 * @param knowledge
+	 * @param sourcePath
 	 */
 	public void persist(Map<String, KnowledgeBase> knowledge, File sourcePath) {
 		// System.out.println("This is what i learned >>>>");
@@ -51,10 +61,8 @@ public class Memory {
 
 	}
 
-	/**
-	 * saves this object as a JSON-File
-	 * 
-	 * @param jsonFile
+	/*
+	 * Saves this object as a JSON-File
 	 */
 	private void persist(KnowledgeBase knowledgeBase, File jsonFile) {
 		// Here the json file must be written
@@ -65,11 +73,8 @@ public class Memory {
 		}
 	}
 
-	/**
+	/*
 	 * loads a JSON-File
-	 * 
-	 * @param jsonFile
-	 * @return the mapped JSON-File
 	 */
 	private KnowledgeBase load(File jsonFile) {
 		// Here the json file must be written
