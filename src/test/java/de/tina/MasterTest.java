@@ -1,6 +1,9 @@
 package de.tina;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import java.io.File;
+import java.util.Map;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -36,9 +39,19 @@ public class MasterTest {
     }
 
     @Test
-    public void testKuendigung() {
+    public void testTrue() {
         Master master = new Master(TEST_SOURCE_PATH, PRE_FILTER, HIT_QUOTA);
-        master.ask("Hallo, ich kündige.");
+        Map<String, Integer> erg = master.ask("Hallo, ich kündige.");
+        assertTrue(erg.containsKey("Kündigung"));
+    }
+
+    @Test
+    public void testFalse() {
+        Master master = new Master(TEST_SOURCE_PATH, PRE_FILTER, HIT_QUOTA);
+        Map<String, Integer> erg = master.ask("Hallo, ich heiße Horst.");
+        assertTrue(erg.size() == 0);
+        assertFalse(erg.containsKey("Kündigung"));
+        assertFalse(erg.containsKey("Begrüßung"));
     }
 
 }
