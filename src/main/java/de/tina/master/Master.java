@@ -1,15 +1,12 @@
 package de.tina.master;
 
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.lang.RandomStringUtils;
 import de.tina.knowledge.Analyser;
 import de.tina.knowledge.KnowledgeBase;
 import de.tina.knowledge.Memory;
@@ -47,37 +44,7 @@ public class Master {
      * @return a map of hits what kind of themes the text is with the percents of hit
      */
     public Map<String, Integer> ask(String text) {
-        Map<String, Integer> themes = think(text);
-
-        // Here we analyse if there is for example a 50:50 Hit.
-        // if thats the the case we must generate a new KnowladgeBase
-        boolean specialCase = isThisASpecialCase(themes);
-        if (specialCase || themes.isEmpty()) {
-            // this text must be checked what this is
-            try {
-                String randomThemeName = RandomStringUtils.randomAlphanumeric(6);
-                File file = new File(sourcePath, randomThemeName + ".txt");
-                Files.write(file.toPath(), text.getBytes());
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        return themes;
-    }
-
-    private boolean isThisASpecialCase(Map<String, Integer> themes) {
-        int quota = 0;
-        for (int value : themes.values()) {
-            quota += value;
-        }
-        if (quota == 100 && themes.size() > 1) {
-            return true;
-        }
-        return false;
-    }
-
-    private Map<String, Integer> think(String text) {
-        Map<String, Integer> out = new HashMap<>();
+        Map<String, Integer> themes = new HashMap<>();
         // Should the knowledgeBase be prefiltert?
         Collection<KnowledgeBase> knowledgeBases = knowledge.values();
         if (preFilter) {
@@ -95,26 +62,16 @@ public class Master {
                     newKnowledgeBase.getMax());
                 // Only themes that are greater than 0%
                 if (erg > 0) {
-                    out.put(knowledgeBase.getName(), erg);
+                    themes.put(knowledgeBase.getName(), erg);
                 }
             }
         }
-        if (out.isEmpty()) {
+        if (themes.isEmpty()) {
             System.out.println("I can't assign >" + text + "<");
             return new HashMap<String, Integer>();
         }
-        // When we don't want the Realtive Probability in our Hits
-        // calculateRelativProbability(out);
-        return out;
+        return themes;
     }
-
-    // private void calculateRelativProbability(Map<String, Integer> out) {
-    // for (String key : out.keySet()) {
-    // if (out.get(key) > 0) {
-    // out.put(key, out.get(key) / out.keySet().size());
-    // }
-    // }
-    // }
 
     private int compareMatrix(int[][] matrixToProve, int[][] possibleMatrix, int maxHits) {
         int countHits = 0;
