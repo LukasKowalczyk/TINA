@@ -7,100 +7,97 @@ import java.util.Map;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+
 import de.tina.knowledge.JsonFilenameFilter;
 import de.tina.knowledge.KnowledgeBase;
 import de.tina.knowledge.Memory;
 import de.tina.master.Master;
 
 public class MasterTest {
-    private static final int HIT_QUOTA = 90;
 
-    private static final boolean PRE_FILTER = false;
+	private static final String TEST_SOURCE_PATH = "C:\\temp\\";
+	@Autowired
+	private static Master master;
+	@Autowired
+	private static Memory memory;
 
-    private static final String TEST_SOURCE_PATH = "C:\\temp\\";
+	@BeforeClass
+	public static void setUpBeforeClass() throws Exception {
+		for (File file : new File(TEST_SOURCE_PATH).listFiles(new JsonFilenameFilter())) {
+			file.delete();
+		}
+		master.learn("Hallo wie geht es dir?", "BegrÃ¼ÃŸung");
+		master.learn("Geht es dir gut?", "BegrÃ¼ÃŸung");
+		master.learn("Hallo, ich kÃ¼ndige.", "KÃ¼ndigung");
+		master.learn("Hallo, ich mÃ¶chte kÃ¼ndigen.", "KÃ¼ndigung");
+		master.finish();
+	}
 
-    @BeforeClass
-    public static void setUpBeforeClass() throws Exception {
-        for (File file : new File(TEST_SOURCE_PATH).listFiles(new JsonFilenameFilter())) {
-            file.delete();
-        }
-        Master apprentice = new Master(TEST_SOURCE_PATH, PRE_FILTER, HIT_QUOTA);
-        apprentice.learn("Hallo wie geht es dir?", "Begrüßung");
-        apprentice.learn("Geht es dir gut?", "Begrüßung");
-        apprentice.learn("Hallo, ich kündige.", "Kündigung");
-        apprentice.learn("Hallo, ich möchte kündigen.", "Kündigung");
-        apprentice.finish();
-    }
+	@AfterClass
+	public static void tearDownAfterClass() throws Exception {
+		for (File file : new File(TEST_SOURCE_PATH).listFiles(new JsonFilenameFilter())) {
+			file.delete();
+		}
+	}
 
-    @AfterClass
-    public static void tearDownAfterClass() throws Exception {
-        for (File file : new File(TEST_SOURCE_PATH).listFiles(new JsonFilenameFilter())) {
-            file.delete();
-        }
-    }
+	@Test
+	public void testTrue() {
+		Map<String, Integer> erg = master.ask("Hallo, ich kÃ¼ndige.");
+		assertTrue(erg.containsKey("KÃ¼ndigung"));
+	}
 
-    @Test
-    public void testTrue() {
-        Master master = new Master(TEST_SOURCE_PATH, PRE_FILTER, HIT_QUOTA);
-        Map<String, Integer> erg = master.ask("Hallo, ich kündige.");
-        assertTrue(erg.containsKey("Kündigung"));
-    }
+	@Test
+	public void testFalse() {
+		Map<String, Integer> erg = master.ask("Hallo, ich heiÃŸe Horst.");
+		assertTrue(erg.size() == 0);
+		assertFalse(erg.containsKey("KÃ¼ndigung"));
+		assertFalse(erg.containsKey("BegrÃ¼ÃŸung"));
+	}
 
-    @Test
-    public void testFalse() {
-        Master master = new Master(TEST_SOURCE_PATH, PRE_FILTER, HIT_QUOTA);
-        Map<String, Integer> erg = master.ask("Hallo, ich heiße Horst.");
-        assertTrue(erg.size() == 0);
-        assertFalse(erg.containsKey("Kündigung"));
-        assertFalse(erg.containsKey("Begrüßung"));
-    }
+	@Test
+	public void testBegruessung() {
+		try {
+			tearDownAfterClass();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		master.learn("Hallo wie geht es dir?", "BegrÃ¼ÃŸung");
+		master.learn("Geht es dir gut?", "BegrÃ¼ÃŸung");
+		master.finish();
+		Map<String, KnowledgeBase> knowledge = memory.remember();
+		assertTrue(knowledge.containsKey("BegrÃ¼ÃŸung"));
+		assertTrue(knowledge.values().size() == 1);
+	}
 
-    @Test
-    public void testBegruessung() {
-        try {
-            tearDownAfterClass();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        Master apprentice = new Master(TEST_SOURCE_PATH, PRE_FILTER, HIT_QUOTA);
-        apprentice.learn("Hallo wie geht es dir?", "Begrüßung");
-        apprentice.learn("Geht es dir gut?", "Begrüßung");
-        apprentice.finish();
-        Map<String, KnowledgeBase> knowledge = Memory.getInstance(new File(TEST_SOURCE_PATH)).remember();
-        assertTrue(knowledge.containsKey("Begrüßung"));
-        assertTrue(knowledge.values().size() == 1);
-    }
+	@Test
+	public void testBegruessungAndKuedigung() {
+		try {
+			tearDownAfterClass();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		master.learn("Hallo wie geht es dir?", "BegrÃ¼ÃŸung");
+		master.learn("Hallo, ich kÃ¼ndige.", "KÃ¼ndigung");
+		master.learn("Hallo, ich mÃ¶chte kÃ¼ndigen.", "KÃ¼ndigung");
+		master.finish();
+		Map<String, KnowledgeBase> knowledge = memory.remember();
+		assertTrue(knowledge.containsKey("BegrÃ¼ÃŸung") && knowledge.containsKey("KÃ¼ndigung"));
+		assertTrue(knowledge.values().size() == 2);
+	}
 
-    @Test
-    public void testBegruessungAndKuedigung() {
-        try {
-            tearDownAfterClass();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        Master apprentice = new Master(TEST_SOURCE_PATH, PRE_FILTER, HIT_QUOTA);
-        apprentice.learn("Hallo wie geht es dir?", "Begrüßung");
-        apprentice.learn("Hallo, ich kündige.", "Kündigung");
-        apprentice.learn("Hallo, ich möchte kündigen.", "Kündigung");
-        apprentice.finish();
-        Map<String, KnowledgeBase> knowledge = Memory.getInstance(new File(TEST_SOURCE_PATH)).remember();
-        assertTrue(knowledge.containsKey("Begrüßung") && knowledge.containsKey("Kündigung"));
-        assertTrue(knowledge.values().size() == 2);
-    }
-
-    @Test
-    public void testWithoutFinish() {
-        try {
-            tearDownAfterClass();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        Master apprentice = new Master(TEST_SOURCE_PATH, PRE_FILTER, HIT_QUOTA);
-        apprentice.learn("Hallo wie geht es dir?", "Begrüßung");
-        apprentice.learn("Hallo, ich kündige.", "Kündigung");
-        Map<String, KnowledgeBase> knowledge = Memory.getInstance(new File(TEST_SOURCE_PATH)).remember();
-        assertFalse(knowledge.containsKey("Begrüßung"));
-        assertFalse(knowledge.containsKey("Kündigung"));
-        assertTrue(knowledge.values().size() == 0);
-    }
+	@Test
+	public void testWithoutFinish() {
+		try {
+			tearDownAfterClass();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		master.learn("Hallo wie geht es dir?", "BegrÃ¼ÃŸung");
+		master.learn("Hallo, ich kÃ¼ndige.", "KÃ¼ndigung");
+		Map<String, KnowledgeBase> knowledge = memory.remember();
+		assertFalse(knowledge.containsKey("BegrÃ¼ÃŸung"));
+		assertFalse(knowledge.containsKey("KÃ¼ndigung"));
+		assertTrue(knowledge.values().size() == 0);
+	}
 }

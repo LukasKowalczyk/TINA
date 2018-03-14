@@ -7,19 +7,26 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.PostConstruct;
+
 import org.apache.commons.lang.ArrayUtils;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
 public class Analyser {
-	@Autowired
 	private String[] stopwords;
 
-	@Autowired
+	@Value("${sentence.seperator}")
 	private String sentenceSeperator;
 
-	private String stopWordsAndSymbols = "\",";
+	@Value("${stop.symbols}")
+	private String stopSymbols;
+
+	@PostConstruct
+	public void init() {
+		stopwords = loadStopWords();
+	}
 
 	/**
 	 * Fill the KnowledgeBase with the words
@@ -72,27 +79,14 @@ public class Analyser {
 		return text;
 	}
 
-	private void loadSentenceSeperator() {
-		try {
-			List<String> terminalsymbols = Files.readAllLines(new File("terminalsymbols").toPath());
-			for (String terminalsymbol : terminalsymbols) {
-				sentenceSeperator += terminalsymbol;
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		sentenceSeperator = "[" + sentenceSeperator + "]";
-	}
-
-	private void loadStopWords() {
-		stopWordsAndSymbols = "[" + stopWordsAndSymbols + "]";
+	private String[] loadStopWords() {
 		try {
 			List<String> stopwords = Files.readAllLines(new File("stopwords").toPath(), StandardCharsets.ISO_8859_1);
-			this.stopwords = stopwords.toArray(new String[stopwords.size()]);
+			return stopwords.toArray(new String[stopwords.size()]);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-
+		return new String[0];
 	}
 
 	/*
@@ -105,7 +99,7 @@ public class Analyser {
 		List<String[]> out = new ArrayList<String[]>();
 		text = text.toLowerCase();
 		// Delete each "," and "\""
-		text = text.replaceAll(stopWordsAndSymbols, "");
+		text = text.replaceAll(stopSymbols, "");
 
 		// Delete the stopwords
 		text = deleteStopwords(text).trim();

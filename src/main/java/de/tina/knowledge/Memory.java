@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import org.apache.commons.io.FileUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
@@ -13,20 +14,8 @@ import com.google.gson.Gson;
 @Component
 public class Memory {
 
-    private static Memory memory;
-
-    private File sourcePath;
-
-    private Memory(File sourcePath) {
-        this.sourcePath = sourcePath;
-    }
-
-    public static Memory getInstance(File sourcePath) {
-        if (memory == null) {
-            memory = new Memory(sourcePath);
-        }
-        return memory;
-    }
+    @Value("${source.path}")
+    private String sourcePath;
 
     /**
      * Loads the knowledge of the sourcePath
@@ -35,7 +24,7 @@ public class Memory {
     public Map<String, KnowledgeBase> remember() {
         Map<String, KnowledgeBase> knowledge = new HashMap<>();
         // load every JSON-File
-        for (File file : sourcePath.listFiles(new JsonFilenameFilter())) {
+        for (File file : getSourcePath().listFiles(new JsonFilenameFilter())) {
             // Map the JSON in the Knowledge
             KnowledgeBase bap = load(file);
             if (bap != null) {
@@ -45,7 +34,11 @@ public class Memory {
         return knowledge;
     }
 
-    /**
+    private File getSourcePath() {
+		return new File(sourcePath);
+	}
+
+	/**
      * Lets persist our knowledge into the sourcePath
      * @param knowledge
      * @param sourcePath

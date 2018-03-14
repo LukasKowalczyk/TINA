@@ -21,4 +21,10 @@ public class Tina {
 			@RequestParam(name = "theme", required = true) String theme) {
 		master.learn(text, theme);
 	}
+
+	@GetMapping("/ask")
+	@ResponseBody
+	public Map<String, Integer> ask(@RequestParam(name = "text", required = true) String text) {
+		return master.ask(text);
+	}
 }

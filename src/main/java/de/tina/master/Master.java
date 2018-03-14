@@ -1,14 +1,16 @@
 package de.tina.master;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.PostConstruct;
+
 import org.apache.commons.lang.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import de.tina.knowledge.Analyser;
@@ -18,9 +20,9 @@ import de.tina.knowledge.Memory;
 @Component
 public class Master {
 
-	@Autowired
+	@Value("${pre.filter}")
 	private boolean preFilter;
-
+	@Value("${succes.quota}")
 	private int succesQuota;
 	@Autowired
 	private Analyser analyser;
@@ -29,18 +31,11 @@ public class Master {
 
 	private Map<String, KnowledgeBase> knowledge;
 
-	/**
-	 * @param sourcePath
-	 * @param preFilter
-	 * @param succesQuota
-	 */
-	public Master(String sourcePath, boolean preFilter, int succesQuota) {
-		this.preFilter = preFilter;
-		this.succesQuota = succesQuota;
-		memory = Memory.getInstance(new File(sourcePath));
-		knowledge = memory.remember();
-
+	@PostConstruct
+	public void init() {
+		this.knowledge = memory.remember();
 	}
+
 
 	/**
 	 * Ask the master what the text is.
