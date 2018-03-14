@@ -39,7 +39,7 @@ public class TinaTests {
 		master.learn("Hallo, ich k�ndige.", "K�ndigung");
 		master.learn("Hallo, ich will k�ndigen!", "K�ndigung");
 		master.learn("Hallo, darf ich k�ndigen?", "K�ndigung");
-		master.finish();
+		master.persist();
 
 		printInfo(master.ask("Hallo, ich k�ndige!"));
 		printInfo(master.ask("Darf ich k�ndigen?"));

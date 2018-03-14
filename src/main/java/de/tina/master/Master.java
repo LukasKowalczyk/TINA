@@ -36,7 +36,6 @@ public class Master {
 		this.knowledge = memory.remember();
 	}
 
-
 	/**
 	 * Ask the master what the text is.
 	 * 
@@ -127,7 +126,8 @@ public class Master {
 		knowledge.put(theme, knowledgeBase);
 	}
 
-	public void finish() {
+	public void persist() {
 		memory.persist(knowledge);
+		knowledge = memory.remember();
 	}
 }

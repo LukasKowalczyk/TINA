@@ -20,6 +20,7 @@ public class Tina {
 	public void learn(@RequestParam(name = "text", required = true) String text,
 			@RequestParam(name = "theme", required = true) String theme) {
 		master.learn(text, theme);
+		master.persist();
 	}
 
 	@GetMapping("/ask")

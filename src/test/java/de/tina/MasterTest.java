@@ -31,7 +31,7 @@ public class MasterTest {
 		master.learn("Geht es dir gut?", "Begrüßung");
 		master.learn("Hallo, ich kündige.", "Kündigung");
 		master.learn("Hallo, ich möchte kündigen.", "Kündigung");
-		master.finish();
+		master.persist();
 	}
 
 	@AfterClass
@@ -64,7 +64,7 @@ public class MasterTest {
 		}
 		master.learn("Hallo wie geht es dir?", "Begrüßung");
 		master.learn("Geht es dir gut?", "Begrüßung");
-		master.finish();
+		master.persist();
 		Map<String, KnowledgeBase> knowledge = memory.remember();
 		assertTrue(knowledge.containsKey("Begrüßung"));
 		assertTrue(knowledge.values().size() == 1);
@@ -80,7 +80,7 @@ public class MasterTest {
 		master.learn("Hallo wie geht es dir?", "Begrüßung");
 		master.learn("Hallo, ich kündige.", "Kündigung");
 		master.learn("Hallo, ich möchte kündigen.", "Kündigung");
-		master.finish();
+		master.persist();
 		Map<String, KnowledgeBase> knowledge = memory.remember();
 		assertTrue(knowledge.containsKey("Begrüßung") && knowledge.containsKey("Kündigung"));
 		assertTrue(knowledge.values().size() == 2);
