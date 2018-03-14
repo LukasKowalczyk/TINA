@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Implementation-Title: TINA
+Implementation-Version: 0.0.0
+Built-By: Lukas
+Implementation-Vendor-Id: de.tina
+Build-Jdk: 1.8.0_161
+Implementation-URL: http://projects.spring.io/spring-boot/TINA/
+Created-By: Maven Integration for Eclipse
+Implementation-Vendor: Pivotal Software, Inc.
+
