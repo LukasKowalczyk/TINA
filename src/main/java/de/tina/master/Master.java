@@ -21,8 +21,6 @@ public class Master {
 
     private Memory memory = Memory.getInstance();
 
-    private String sourcePath;
-
     private Map<String, KnowledgeBase> knowledge;
 
     /**
@@ -33,7 +31,6 @@ public class Master {
     public Master(String sourcePath, boolean preFilter, int succesQuota) {
         this.preFilter = preFilter;
         this.succesQuota = succesQuota;
-        this.sourcePath = sourcePath;
         knowledge = memory.remember(new File(sourcePath));
 
     }
