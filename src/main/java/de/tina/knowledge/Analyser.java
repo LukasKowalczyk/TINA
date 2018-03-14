@@ -5,11 +5,9 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.lang.StringUtils;
 
 public class Analyser {
 	private static Analyser analyise;
@@ -64,22 +62,12 @@ public class Analyser {
 	public String[] getVocabulary(String text) {
 		String[] vocabulary = new String[0];
 
-		// First the text to lower case
-		text = text.toLowerCase();
-
-		// Delete the stopwords
-		text = deleteStopwords(text);
-
 		// And now we split the text
 		List<String[]> splitedText = splitText(text);
 		for (String[] words : splitedText) {
-			do {
-				words = (String[]) ArrayUtils.removeElement(words, StringUtils.EMPTY);
-			} while (ArrayUtils.contains(words, StringUtils.EMPTY));
 			for (String word : words) {
-				word = word.trim();
-				// We add only unknown words AND no stopwords
-				if (ArrayUtils.contains(vocabulary, word) && !word.isEmpty()) {
+				// We add only unknown words
+				if (!ArrayUtils.contains(vocabulary, word)) {
 					vocabulary = (String[]) ArrayUtils.add(vocabulary, word);
 				}
 			}
@@ -131,7 +119,9 @@ public class Analyser {
 
 		// Delete the stopwords
 		text = deleteStopwords(text).trim();
-
+		if (text.isEmpty()) {
+			return out;
+		}
 		// Split sentence after seperator for example ".", "!" or "?" and
 		// so on.
 		String[] sentences = text.split(sentenceSeperator);
@@ -140,12 +130,9 @@ public class Analyser {
 		// dataset
 		for (String s : sentences) {
 			String[] words = s.split(" ");
-			do {
-				words = (String[]) ArrayUtils.removeElement(words, StringUtils.EMPTY);
-			} while (ArrayUtils.contains(words, StringUtils.EMPTY));
 			for (String word : words) {
 				word = word.trim();
-				if (ArrayUtils.contains(stopwords, word) && !word.isEmpty()) {
+				if (ArrayUtils.contains(stopwords, word) || word.isEmpty()) {
 					words = (String[]) ArrayUtils.removeElement(words, word);
 				}
 			}

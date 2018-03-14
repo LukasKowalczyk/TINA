@@ -54,8 +54,6 @@ public class AnalyserTest {
 		}
 		//z.b. bsp. and zb. must becoded that will dont be splittet
 		KnowledgeBase erg = Analyser.getInstance().fillTheKnowledgeBase(stopwordsText, new KnowledgeBase("Test"));
-		System.out.println(Arrays.toString(erg.getVocabulary()));
-		System.out.println(erg);
 		assertEquals(erg.getVocabulary().length, 0);
 		assertEquals(erg.getName(), "Test");
 	}
