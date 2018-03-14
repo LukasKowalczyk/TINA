@@ -7,21 +7,21 @@ import java.util.Map;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import de.tina.container.NeuronMatrix;
+import de.tina.controller.Memory;
 import de.tina.knowledge.JsonFilenameFilter;
-import de.tina.knowledge.KnowledgeBase;
-import de.tina.knowledge.Memory;
 
 public class MemoryTest {
 	private static final File TEST_SOURCER_PATH = new File("D:\\test\\");
 	@Autowired
 	private Memory memory;
-	private Map<String, KnowledgeBase> knowledge = new HashMap<>();
+	private Map<String, NeuronMatrix> knowledge = new HashMap<>();
 
 	public void setUpBefore() {
 		knowledge = new HashMap<>();
-		KnowledgeBase knowledgeBase1 = new KnowledgeBase("Test");
+		NeuronMatrix knowledgeBase1 = new NeuronMatrix("Test");
 		knowledgeBase1.add("Hallo", "wie");
-		KnowledgeBase knowledgeBase2 = new KnowledgeBase("Test1");
+		NeuronMatrix knowledgeBase2 = new NeuronMatrix("Test1");
 		knowledgeBase2.add("Hallo", "wie");
 		knowledge.put("Test", knowledgeBase1);
 		knowledge.put("Test1", knowledgeBase2);
@@ -45,7 +45,7 @@ public class MemoryTest {
 	public void load() {
 		setUpBefore();
 		memory.persist(knowledge);
-		Map<String, KnowledgeBase> loadKnowledge = memory.remember();
+		Map<String, NeuronMatrix> loadKnowledge = memory.remember();
 		assertEquals(knowledge, loadKnowledge);
 		tearDownAfter();
 	}

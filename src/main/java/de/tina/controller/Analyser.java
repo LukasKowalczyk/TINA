@@ -1,4 +1,4 @@
-package de.tina.knowledge;
+package de.tina.controller;
 
 import java.io.File;
 import java.io.IOException;
@@ -10,8 +10,12 @@ import java.util.List;
 import javax.annotation.PostConstruct;
 
 import org.apache.commons.lang.ArrayUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+
+import de.tina.container.NeuronMatrix;
+import de.tina.container.Neurons;
 
 @Component
 public class Analyser {
@@ -23,53 +27,57 @@ public class Analyser {
 	@Value("${stop.symbols}")
 	private String stopSymbols;
 
+	@Autowired
+	private Neurons neurons;
+
 	@PostConstruct
 	public void init() {
 		stopwords = loadStopWords();
 	}
 
 	/**
-	 * Fill the KnowledgeBase with the words
+	 * Fill the NeuronMatrix with the words
 	 * 
 	 * @param splitedText
-	 * @param knowledgeBase
-	 * @return the filled KnowledgeBase
+	 * @param neuronMatrix
+	 * @return the filled NeuronMatrix
 	 */
-	public KnowledgeBase fillTheKnowledgeBase(String text, KnowledgeBase knowledgeBase) {
+	public NeuronMatrix fillTheKnowledgeBase(String text, NeuronMatrix neuronMatrix) {
 		// Split the text by every sentence and than by every word
 		List<String[]> splitedText = splitText(text);
-		for (String[] words : splitedText) {
-			for (int i = 0; words.length > i; i++) {
-				if (words.length > i + 1) {
-					knowledgeBase.add(words[i], words[i + 1]);
+		for (String[] neuronIDs : splitedText) {
+			for (int i = 0; neuronIDs.length > i; i++) {
+				if (neuronIDs.length > i + 1) {
+					neuronMatrix.add(neuronIDs[i], neuronIDs[i + 1]);
 				} else {
-					knowledgeBase.add(words[i]);
+					neuronMatrix.add(neuronIDs[i]);
 				}
 			}
 		}
-		return knowledgeBase;
+		return neuronMatrix;
 	}
 
 	/**
-	 * Extract the vocabulary of the text.
+	 * Extract the neurons of the text.
 	 * 
 	 * @param text
-	 * @return the vocabulary
+	 * @return the neurons
 	 */
 	public String[] getVocabulary(String text) {
-		String[] vocabulary = new String[0];
-
+		Neurons neurons = new Neurons();
 		// And now we split the text
 		List<String[]> splitedText = splitText(text);
 		for (String[] words : splitedText) {
 			for (String word : words) {
 				// We add only unknown words
-				if (!ArrayUtils.contains(vocabulary, word)) {
-					vocabulary = (String[]) ArrayUtils.add(vocabulary, word);
+				if (neurons.contains(word)) {
+
+					neurons.add(word);
+
 				}
 			}
 		}
-		return vocabulary;
+		return neurons.getIds();
 	}
 
 	private String deleteStopwords(String text) {
@@ -118,10 +126,13 @@ public class Analyser {
 				word = word.trim();
 				if (ArrayUtils.contains(stopwords, word) || word.isEmpty()) {
 					words = (String[]) ArrayUtils.removeElement(words, word);
+				} else {
+					neurons.add(word);
 				}
 			}
 			out.add(words);
 		}
+		neurons.persist();
 		return out;
 	}
 

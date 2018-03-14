@@ -1,4 +1,4 @@
-package de.tina.master;
+package de.tina.controller;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -13,9 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import de.tina.knowledge.Analyser;
-import de.tina.knowledge.KnowledgeBase;
-import de.tina.knowledge.Memory;
+import de.tina.container.NeuronMatrix;
 
 @Component
 public class Master {
@@ -29,7 +27,7 @@ public class Master {
 	@Autowired
 	private Memory memory;
 
-	private Map<String, KnowledgeBase> knowledge;
+	private Map<String, NeuronMatrix> knowledge;
 
 	@PostConstruct
 	public void init() {
@@ -46,17 +44,17 @@ public class Master {
 	public Map<String, Integer> ask(String text) {
 		Map<String, Integer> themes = new HashMap<>();
 		// Should the knowledgeBase be prefiltert?
-		Collection<KnowledgeBase> knowledgeBases = knowledge.values();
+		Collection<NeuronMatrix> knowledgeBases = knowledge.values();
 		if (preFilter) {
 			knowledgeBases = possibleThemeByVocabulary(analyser.getVocabulary(text));
 		}
 		// Now we must find our matching knowledgebase(s)
 		if (!ArrayUtils.isEmpty(knowledgeBases.toArray())) {
-			for (KnowledgeBase knowledgeBase : knowledgeBases) {
+			for (NeuronMatrix knowledgeBase : knowledgeBases) {
 				// Create a new knowledgeBase out of the text but with a given
-				// vocabulary
-				KnowledgeBase newKnowledgeBase = analyser.fillTheKnowledgeBase(text,
-						new KnowledgeBase(knowledgeBase.getName(), knowledgeBase.getVocabulary()));
+				// neurons
+				NeuronMatrix newKnowledgeBase = analyser.fillTheKnowledgeBase(text,
+						new NeuronMatrix(knowledgeBase.getName(), knowledgeBase.getNeuronIds()));
 				// Percent of the matching of the knowledgeBases
 				int erg = compareMatrix(newKnowledgeBase.getAdjiazenMatrix(), knowledgeBase.getAdjiazenMatrix(),
 						newKnowledgeBase.getMax());
@@ -87,15 +85,15 @@ public class Master {
 		return (int) ((countHits) / (double) maxHits * 100);
 	}
 
-	private List<KnowledgeBase> possibleThemeByVocabulary(String[] vocabulary) {
-		List<KnowledgeBase> out = new ArrayList<KnowledgeBase>();
+	private List<NeuronMatrix> possibleThemeByVocabulary(String[] vocabulary) {
+		List<NeuronMatrix> out = new ArrayList<NeuronMatrix>();
 		for (String key : knowledge.keySet()) {
-			KnowledgeBase v = knowledge.get(key);
+			NeuronMatrix v = knowledge.get(key);
 			int countFails = 0;
 			for (int i = 0; i < vocabulary.length; i++) {
 				String word = vocabulary[i];
 				// Counts every missmatch
-				if (!ArrayUtils.contains(v.getVocabulary(), word)) {
+				if (!ArrayUtils.contains(v.getNeuronIds(), word)) {
 					countFails++;
 				}
 			}
@@ -118,16 +116,20 @@ public class Master {
 	public void learn(String text, String theme) {
 		// First of all we check if its a theme we already know
 		if (!knowledge.containsKey(theme)) {
-			knowledge.put(theme, new KnowledgeBase(theme));
+			knowledge.put(theme, new NeuronMatrix(theme));
 		}
 		// System.out.println("I learning that >" + text + "< is >" + theme +
 		// "<!");
-		KnowledgeBase knowledgeBase = analyser.fillTheKnowledgeBase(text, knowledge.get(theme));
+		NeuronMatrix knowledgeBase = analyser.fillTheKnowledgeBase(text, knowledge.get(theme));
 		knowledge.put(theme, knowledgeBase);
 	}
 
 	public void persist() {
 		memory.persist(knowledge);
 		knowledge = memory.remember();
+	}
+
+	public NeuronMatrix getKnowledgeBase(String theme) {
+		return knowledge.get(theme);
 	}
 }

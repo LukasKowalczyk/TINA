@@ -1,4 +1,4 @@
-package de.tina.knowledge;
+package de.tina.controller;
 
 import java.io.File;
 import java.io.IOException;
@@ -11,6 +11,9 @@ import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
 
+import de.tina.container.NeuronMatrix;
+import de.tina.knowledge.JsonFilenameFilter;
+
 @Component
 public class Memory {
 
@@ -21,14 +24,14 @@ public class Memory {
      * Loads the knowledge of the sourcePath
      * @return a Map with the Name of the knowledgeBase as Key an the knowledgeBase as Value
      */
-    public Map<String, KnowledgeBase> remember() {
-        Map<String, KnowledgeBase> knowledge = new HashMap<>();
+    public Map<String, NeuronMatrix> remember() {
+        Map<String, NeuronMatrix> knowledge = new HashMap<>();
         // load every JSON-File
         for (File file : getSourcePath().listFiles(new JsonFilenameFilter())) {
             // Map the JSON in the Knowledge
-            KnowledgeBase bap = load(file);
-            if (bap != null) {
-                knowledge.put(bap.getName(), bap);
+            NeuronMatrix neuronMatrix = load(file);
+            if (neuronMatrix != null) {
+                knowledge.put(neuronMatrix.getName(), neuronMatrix);
             }
         }
         return knowledge;
@@ -43,11 +46,11 @@ public class Memory {
      * @param knowledge
      * @param sourcePath
      */
-    public void persist(Map<String, KnowledgeBase> knowledge) {
+    public void persist(Map<String, NeuronMatrix> knowledge) {
         // System.out.println("This is what i learned >>>>");
         Iterator<String> i = knowledge.keySet().iterator();
         while (i.hasNext()) {
-            KnowledgeBase knowledgeBase = knowledge.get(i.next());
+            NeuronMatrix knowledgeBase = knowledge.get(i.next());
             persist(knowledgeBase, new File(sourcePath, knowledgeBase.getName() + JsonFilenameFilter.JSON_EXTENSION));
             // System.out.println(knowledgeBase.print());
         }
@@ -57,10 +60,10 @@ public class Memory {
     /*
      * Saves this object as a JSON-File
      */
-    private void persist(KnowledgeBase knowledgeBase, File jsonFile) {
+    private void persist(NeuronMatrix neuronMatrix, File jsonFile) {
         // Here the json file must be written
         try {
-            FileUtils.writeByteArrayToFile(jsonFile, new Gson().toJson(knowledgeBase).getBytes(), false);
+            FileUtils.writeByteArrayToFile(jsonFile, new Gson().toJson(neuronMatrix).getBytes(), false);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -69,12 +72,11 @@ public class Memory {
     /*
      * loads a JSON-File
      */
-    private KnowledgeBase load(File jsonFile) {
+    private NeuronMatrix load(File jsonFile) {
         // Here the json file must be written
         try {
             String inhalt = new String(FileUtils.readFileToByteArray(jsonFile));
-            KnowledgeBase bareaPojo = new Gson().fromJson(inhalt, KnowledgeBase.class);
-            return bareaPojo;
+            return new Gson().fromJson(inhalt, NeuronMatrix.class);
         } catch (IOException e) {
             e.printStackTrace();
         }

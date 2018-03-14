@@ -13,8 +13,8 @@ import org.apache.commons.lang.ArrayUtils;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import de.tina.knowledge.Analyser;
-import de.tina.knowledge.KnowledgeBase;
+import de.tina.container.NeuronMatrix;
+import de.tina.controller.Analyser;
 
 public class AnalyserTest {
 
@@ -23,11 +23,11 @@ public class AnalyserTest {
 
 	@Test
 	public void testKuedigenText() {
-		KnowledgeBase erg = analyser.fillTheKnowledgeBase("Hallo, ich will k�ndigen!",
-				new KnowledgeBase("Test"));
-		assertEquals(erg.getVocabulary().length, 2);
-		assertTrue(ArrayUtils.contains(erg.getVocabulary(), "hallo"));
-		assertTrue(ArrayUtils.contains(erg.getVocabulary(), "k�ndigen"));
+		NeuronMatrix erg = analyser.fillTheKnowledgeBase("Hallo, ich will k�ndigen!",
+				new NeuronMatrix("Test"));
+		assertEquals(erg.getNeuronIds().length, 2);
+		assertTrue(ArrayUtils.contains(erg.getNeuronIds(), "hallo"));
+		assertTrue(ArrayUtils.contains(erg.getNeuronIds(), "k�ndigen"));
 		assertEquals(erg.getName(), "Test");
 		assertEquals(erg.getAdjiazenMatrix().length, 2);
 		assertEquals(erg.getAdjiazenMatrix()[0].length, 2);
@@ -36,12 +36,12 @@ public class AnalyserTest {
 
 	@Test
 	public void testKuedigenFrageText() {
-		KnowledgeBase erg = analyser.fillTheKnowledgeBase("Hallo, darf ich k�ndigen?",
-				new KnowledgeBase("Test"));
-		assertEquals(erg.getVocabulary().length, 3);
-		assertTrue(ArrayUtils.contains(erg.getVocabulary(), "hallo"));
-		assertTrue(ArrayUtils.contains(erg.getVocabulary(), "k�ndigen"));
-		assertTrue(ArrayUtils.contains(erg.getVocabulary(), "darf"));
+		NeuronMatrix erg = analyser.fillTheKnowledgeBase("Hallo, darf ich k�ndigen?",
+				new NeuronMatrix("Test"));
+		assertEquals(erg.getNeuronIds().length, 3);
+		assertTrue(ArrayUtils.contains(erg.getNeuronIds(), "hallo"));
+		assertTrue(ArrayUtils.contains(erg.getNeuronIds(), "k�ndigen"));
+		assertTrue(ArrayUtils.contains(erg.getNeuronIds(), "darf"));
 		assertEquals(erg.getName(), "Test");
 		assertEquals(erg.getAdjiazenMatrix().length, 3);
 		assertEquals(erg.getAdjiazenMatrix()[0].length, 3);
@@ -56,8 +56,8 @@ public class AnalyserTest {
 			stopwordsText += s + " ";
 		}
 		//z.b. bsp. and zb. must becoded that will dont be splittet
-		KnowledgeBase erg = analyser.fillTheKnowledgeBase(stopwordsText, new KnowledgeBase("Test"));
-		assertEquals(erg.getVocabulary().length, 0);
+		NeuronMatrix erg = analyser.fillTheKnowledgeBase(stopwordsText, new NeuronMatrix("Test"));
+		assertEquals(erg.getNeuronIds().length, 0);
 		assertEquals(erg.getName(), "Test");
 	}
 }

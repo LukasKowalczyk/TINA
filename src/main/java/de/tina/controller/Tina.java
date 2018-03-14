@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import de.tina.master.Master;
+import de.tina.container.NeuronMatrix;
 
 @RestController
 public class Tina {
@@ -27,5 +27,11 @@ public class Tina {
 	@ResponseBody
 	public Map<String, Integer> ask(@RequestParam(name = "text", required = true) String text) {
 		return master.ask(text);
+	}
+	
+	@GetMapping("/get")
+	@ResponseBody
+	public NeuronMatrix get(@RequestParam(name = "theme", required = true) String theme) {
+		return master.getKnowledgeBase(theme);
 	}
 }

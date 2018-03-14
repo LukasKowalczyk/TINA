@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import de.tina.master.Master;
+import de.tina.controller.Master;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest

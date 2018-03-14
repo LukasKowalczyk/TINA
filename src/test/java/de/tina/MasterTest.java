@@ -9,10 +9,10 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import de.tina.container.NeuronMatrix;
+import de.tina.controller.Master;
+import de.tina.controller.Memory;
 import de.tina.knowledge.JsonFilenameFilter;
-import de.tina.knowledge.KnowledgeBase;
-import de.tina.knowledge.Memory;
-import de.tina.master.Master;
 
 public class MasterTest {
 
@@ -65,7 +65,7 @@ public class MasterTest {
 		master.learn("Hallo wie geht es dir?", "Begrüßung");
 		master.learn("Geht es dir gut?", "Begrüßung");
 		master.persist();
-		Map<String, KnowledgeBase> knowledge = memory.remember();
+		Map<String, NeuronMatrix> knowledge = memory.remember();
 		assertTrue(knowledge.containsKey("Begrüßung"));
 		assertTrue(knowledge.values().size() == 1);
 	}
@@ -81,7 +81,7 @@ public class MasterTest {
 		master.learn("Hallo, ich kündige.", "Kündigung");
 		master.learn("Hallo, ich möchte kündigen.", "Kündigung");
 		master.persist();
-		Map<String, KnowledgeBase> knowledge = memory.remember();
+		Map<String, NeuronMatrix> knowledge = memory.remember();
 		assertTrue(knowledge.containsKey("Begrüßung") && knowledge.containsKey("Kündigung"));
 		assertTrue(knowledge.values().size() == 2);
 	}
@@ -95,7 +95,7 @@ public class MasterTest {
 		}
 		master.learn("Hallo wie geht es dir?", "Begrüßung");
 		master.learn("Hallo, ich kündige.", "Kündigung");
-		Map<String, KnowledgeBase> knowledge = memory.remember();
+		Map<String, NeuronMatrix> knowledge = memory.remember();
 		assertFalse(knowledge.containsKey("Begrüßung"));
 		assertFalse(knowledge.containsKey("Kündigung"));
 		assertTrue(knowledge.values().size() == 0);

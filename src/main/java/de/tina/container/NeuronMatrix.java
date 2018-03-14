@@ -1,39 +1,39 @@
-package de.tina.knowledge;
+package de.tina.container;
 
 import java.util.Arrays;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 
-public class KnowledgeBase {
+public class NeuronMatrix {
 
 	private String name;
 
 	private int max;
 
-	private String[] vocabulary;
+	private String[] neuronIds;
 
 	private int[][] adjiazenMatrix;
 
 	/**
 	 * @param name
 	 */
-	public KnowledgeBase(String name) {
+	public NeuronMatrix(String name) {
 		this.max = 0;
 		this.name = name;
-		this.vocabulary = new String[0];
+		this.neuronIds = new String[0];
 		this.adjiazenMatrix = new int[0][0];
 	}
 
 	/**
 	 * @param name
-	 * @param vocabulary
+	 * @param neuronIds
 	 */
-	public KnowledgeBase(String name, String[] vocabulary) {
+	public NeuronMatrix(String name, String[] neuronIds) {
 		this.name = name;
 		this.max = 0;
-		this.vocabulary = vocabulary;
-		this.adjiazenMatrix = new int[vocabulary.length][vocabulary.length];
+		this.neuronIds = neuronIds;
+		this.adjiazenMatrix = new int[neuronIds.length][neuronIds.length];
 	}
 
 	/**
@@ -44,10 +44,10 @@ public class KnowledgeBase {
 	}
 
 	/**
-	 * @return the vocabulary
+	 * @return the neuronIds
 	 */
-	public String[] getVocabulary() {
-		return vocabulary;
+	public String[] getNeuronIds() {
+		return neuronIds;
 	}
 
 	/**
@@ -67,11 +67,11 @@ public class KnowledgeBase {
 	/**
 	 * Add a new word to the knowledgeBase
 	 * 
-	 * @param word
+	 * @param neuronId
 	 */
-	public void add(String word) {
-		if (ArrayUtils.indexOf(vocabulary, word) < 0) {
-			vocabulary = (String[]) ArrayUtils.add(vocabulary, word);
+	public void add(String neuronId) {
+		if (ArrayUtils.indexOf(neuronIds, neuronId) < 0) {
+			neuronIds = (String[]) ArrayUtils.add(neuronIds, neuronId);
 			adjiazenMatrix = appentToMatrix(adjiazenMatrix);
 		}
 	}
@@ -84,8 +84,8 @@ public class KnowledgeBase {
 	public void add(String word, String follower) {
 		add(word);
 		add(follower);
-		int indexWord = ArrayUtils.indexOf(vocabulary, word);
-		int indexFollower = ArrayUtils.indexOf(vocabulary, follower);
+		int indexWord = ArrayUtils.indexOf(neuronIds, word);
+		int indexFollower = ArrayUtils.indexOf(neuronIds, follower);
 		if (indexWord >= 0 && indexFollower >= 0) {
 			adjiazenMatrix[indexWord][indexFollower] -= 1;
 		}
@@ -98,7 +98,7 @@ public class KnowledgeBase {
 		int result = 1;
 		result = prime * result + Arrays.deepHashCode(adjiazenMatrix);
 		result = prime * result + ((name == null) ? 0 : name.hashCode());
-		result = prime * result + Arrays.hashCode(vocabulary);
+		result = prime * result + Arrays.hashCode(neuronIds);
 		return result;
 	}
 
@@ -113,7 +113,7 @@ public class KnowledgeBase {
 		if (getClass() != obj.getClass()) {
 			return false;
 		}
-		KnowledgeBase other = (KnowledgeBase) obj;
+		NeuronMatrix other = (NeuronMatrix) obj;
 		if (!Arrays.deepEquals(adjiazenMatrix, other.adjiazenMatrix)) {
 			return false;
 		}
@@ -124,7 +124,7 @@ public class KnowledgeBase {
 		} else if (!name.equals(other.name)) {
 			return false;
 		}
-		if (!Arrays.equals(vocabulary, other.vocabulary)) {
+		if (!Arrays.equals(neuronIds, other.neuronIds)) {
 			return false;
 		}
 		return true;
@@ -137,7 +137,7 @@ public class KnowledgeBase {
 			matrix += Arrays.toString(is) + ", ";
 		}
 		matrix += "]";
-		return "KnowledgeBase [name=" + name + ", vocabulary=" + Arrays.toString(vocabulary) + ", adjiazenMatrix="
+		return "NeuronMatrix [name=" + name + ", neuronIds=" + Arrays.toString(neuronIds) + ", adjiazenMatrix="
 				+ matrix + "]";
 	}
 
@@ -148,12 +148,12 @@ public class KnowledgeBase {
 	public String print() {
 		String ajinmatrix = "";
 		String header = StringUtils.repeat(" ", 8) + "|";
-		for (String n : vocabulary) {
+		for (String n : neuronIds) {
 			header += StringUtils.leftPad(n, 8, " ") + "|";
 		}
 		header += "\n";
 		for (int i = 0; i < adjiazenMatrix.length; i++) {
-			String row = StringUtils.leftPad(vocabulary[i], 8, " ") + "|";
+			String row = StringUtils.leftPad(neuronIds[i], 8, " ") + "|";
 			for (int j = 0; j < adjiazenMatrix.length; j++) {
 				row += StringUtils.leftPad(String.valueOf(adjiazenMatrix[i][j]), 8, " ") + "|";
 			}
