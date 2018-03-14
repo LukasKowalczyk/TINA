@@ -8,28 +8,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang.ArrayUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+@Component
 public class Analyser {
-	private static Analyser analyise;
-
+	@Autowired
 	private String[] stopwords;
 
-	private String sentenceSeperator = "";
+	@Autowired
+	private String sentenceSeperator;
 
 	private String stopWordsAndSymbols = "\",";
-
-	private Analyser() {
-		loadSentenceSeperator();
-		loadStopWords();
-	}
-
-	public static Analyser getInstance() {
-		if (analyise == null) {
-			analyise = new Analyser();
-		}
-		return analyise;
-
-	}
 
 	/**
 	 * Fill the KnowledgeBase with the words

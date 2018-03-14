@@ -8,19 +8,23 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.ArrayUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import de.tina.knowledge.Analyser;
 import de.tina.knowledge.KnowledgeBase;
 import de.tina.knowledge.Memory;
 
+@Component
 public class Master {
 
+	@Autowired
 	private boolean preFilter;
 
 	private int succesQuota;
-
+	@Autowired
 	private Analyser analyser;
-
+	@Autowired
 	private Memory memory;
 
 	private Map<String, KnowledgeBase> knowledge;
@@ -33,7 +37,6 @@ public class Master {
 	public Master(String sourcePath, boolean preFilter, int succesQuota) {
 		this.preFilter = preFilter;
 		this.succesQuota = succesQuota;
-		analyser = Analyser.getInstance();
 		memory = Memory.getInstance(new File(sourcePath));
 		knowledge = memory.remember();
 

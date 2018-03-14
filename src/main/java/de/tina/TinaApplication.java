@@ -5,8 +5,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
 
-public class TINA {
+public class TinaApplication {
 	public static void main(String[] args) {
-		SpringApplication.run(TINA.class, args);
+		SpringApplication.run(TinaApplication.class, args);
 	}
 }

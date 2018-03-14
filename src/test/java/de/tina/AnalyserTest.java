@@ -7,24 +7,27 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import de.tina.knowledge.Analyser;
 import de.tina.knowledge.KnowledgeBase;
 
 public class AnalyserTest {
 
+	@Autowired
+	private Analyser analyser;
+
 	@Test
 	public void testKuedigenText() {
-		KnowledgeBase erg = Analyser.getInstance().fillTheKnowledgeBase("Hallo, ich will kündigen!",
+		KnowledgeBase erg = analyser.fillTheKnowledgeBase("Hallo, ich will kï¿½ndigen!",
 				new KnowledgeBase("Test"));
 		assertEquals(erg.getVocabulary().length, 2);
 		assertTrue(ArrayUtils.contains(erg.getVocabulary(), "hallo"));
-		assertTrue(ArrayUtils.contains(erg.getVocabulary(), "kündigen"));
+		assertTrue(ArrayUtils.contains(erg.getVocabulary(), "kï¿½ndigen"));
 		assertEquals(erg.getName(), "Test");
 		assertEquals(erg.getAdjiazenMatrix().length, 2);
 		assertEquals(erg.getAdjiazenMatrix()[0].length, 2);
@@ -33,11 +36,11 @@ public class AnalyserTest {
 
 	@Test
 	public void testKuedigenFrageText() {
-		KnowledgeBase erg = Analyser.getInstance().fillTheKnowledgeBase("Hallo, darf ich kündigen?",
+		KnowledgeBase erg = analyser.fillTheKnowledgeBase("Hallo, darf ich kï¿½ndigen?",
 				new KnowledgeBase("Test"));
 		assertEquals(erg.getVocabulary().length, 3);
 		assertTrue(ArrayUtils.contains(erg.getVocabulary(), "hallo"));
-		assertTrue(ArrayUtils.contains(erg.getVocabulary(), "kündigen"));
+		assertTrue(ArrayUtils.contains(erg.getVocabulary(), "kï¿½ndigen"));
 		assertTrue(ArrayUtils.contains(erg.getVocabulary(), "darf"));
 		assertEquals(erg.getName(), "Test");
 		assertEquals(erg.getAdjiazenMatrix().length, 3);
@@ -53,7 +56,7 @@ public class AnalyserTest {
 			stopwordsText += s + " ";
 		}
 		//z.b. bsp. and zb. must becoded that will dont be splittet
-		KnowledgeBase erg = Analyser.getInstance().fillTheKnowledgeBase(stopwordsText, new KnowledgeBase("Test"));
+		KnowledgeBase erg = analyser.fillTheKnowledgeBase(stopwordsText, new KnowledgeBase("Test"));
 		assertEquals(erg.getVocabulary().length, 0);
 		assertEquals(erg.getName(), "Test");
 	}

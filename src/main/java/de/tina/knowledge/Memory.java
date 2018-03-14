@@ -6,8 +6,11 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import org.apache.commons.io.FileUtils;
+import org.springframework.stereotype.Component;
+
 import com.google.gson.Gson;
 
+@Component
 public class Memory {
 
     private static Memory memory;
