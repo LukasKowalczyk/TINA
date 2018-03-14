@@ -17,9 +17,11 @@ public class Master {
 
     private int succesQuota;
 
+    private String sourcePath;
+
     private Analyser analyser = Analyser.getInstance();
 
-    private Memory memory = Memory.getInstance();
+    private Memory memory;
 
     private Map<String, KnowledgeBase> knowledge;
 
@@ -31,7 +33,8 @@ public class Master {
     public Master(String sourcePath, boolean preFilter, int succesQuota) {
         this.preFilter = preFilter;
         this.succesQuota = succesQuota;
-        knowledge = memory.remember(new File(sourcePath));
+        memory = Memory.getInstance(new File(sourcePath));
+        knowledge = memory.remember();
 
     }
 
@@ -104,5 +107,25 @@ public class Master {
             }
         }
         return out;
+    }
+
+    /**
+     * Teach the apprentice that this text is this theme
+     * @param text
+     * @param theme
+     */
+    public void learn(String text, String theme) {
+        // First of all we check if its a theme we already know
+        if (!knowledge.containsKey(theme)) {
+            knowledge.put(theme, new KnowledgeBase(theme));
+        }
+        // System.out.println("I learning that >" + text + "< is >" + theme +
+        // "<!");
+        KnowledgeBase knowledgeBase = analyser.fillTheKnowledgeBase(text, knowledge.get(theme));
+        knowledge.put(theme, knowledgeBase);
+    }
+
+    public void finish() {
+        memory.persist(knowledge);
     }
 }
