@@ -17,6 +17,13 @@ public class Neuron implements Comparable<String> {
     /**
      * @param content
      */
+    public Neuron() {
+        this.content = new byte[0];
+    }
+
+    /**
+     * @param content
+     */
     public Neuron(byte[] content) {
         this.content = content;
     }

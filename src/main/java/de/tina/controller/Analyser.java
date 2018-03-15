@@ -61,20 +61,20 @@ public class Analyser {
      * @param words
      */
     private long findIdByWordInNeurons(String word) {
-        if (neurons.findeOneByContent(word.getBytes()) == null) {
+        if (neurons.findOneByContent(word.getBytes()) == null) {
             neurons.save(new Neuron(word.getBytes()));
         }
-        return neurons.findeOneByContent(word.getBytes()).getId();
+        return neurons.findOneByContent(word.getBytes()).getId();
     }
 
     /**
      * @param words
      */
     private Neuron findWordInNeurons(String word) {
-        if (neurons.findeOneByContent(word.getBytes()) == null) {
+        if (neurons.findOneByContent(word.getBytes()) == null) {
             neurons.save(new Neuron(word.getBytes()));
         }
-        return neurons.findeOneByContent(word.getBytes());
+        return neurons.findOneByContent(word.getBytes());
     }
 
     /**
@@ -89,7 +89,7 @@ public class Analyser {
         for (String[] words : splitedText) {
             for (String word : words) {
                 // We add only unknown words
-                if (neurons.findeOneByContent(word.getBytes()) == null) {
+                if (neurons.findOneByContent(word.getBytes()) == null) {
                     neurons.save(new Neuron(word.getBytes()));
                 }
                 output.add(findWordInNeurons(word));

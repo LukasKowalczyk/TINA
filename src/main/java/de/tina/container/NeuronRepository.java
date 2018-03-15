@@ -7,6 +7,5 @@ public interface NeuronRepository extends CrudRepository<Neuron, Long> {
 
     List<Neuron> findByContent(byte[] cotnent);
 
-    Neuron findeOneByContent(byte[] content);
-
+    Neuron findOneByContent(byte[] cotnent);
 }

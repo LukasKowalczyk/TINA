@@ -8,9 +8,7 @@ import java.util.Map;
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-
 import com.google.gson.Gson;
-
 import de.tina.container.NeuronMatrix;
 import de.tina.knowledge.JsonFilenameFilter;
 
@@ -38,10 +36,10 @@ public class Memory {
     }
 
     private File getSourcePath() {
-		return new File(sourcePath);
-	}
+        return new File(sourcePath);
+    }
 
-	/**
+    /**
      * Lets persist our knowledge into the sourcePath
      * @param knowledge
      * @param sourcePath
@@ -54,7 +52,6 @@ public class Memory {
             persist(knowledgeBase, new File(sourcePath, knowledgeBase.getName() + JsonFilenameFilter.JSON_EXTENSION));
             // System.out.println(knowledgeBase.print());
         }
-
     }
 
     /*
