@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 import de.tina.container.Neuron;
 import de.tina.container.NeuronMatrix;
 import de.tina.container.NeuronRepository;
+import de.tina.container.NeuronTyp;
 
 @Component
 public class Analyser {
@@ -46,8 +47,8 @@ public class Analyser {
             for (int i = 0; words.length > i; i++) {
                 // if not exist in Database than add to it
                 Long id = findIdByWordInNeurons(words[i]);
-                Long idFollower = findIdByWordInNeurons(words[i]);
                 if (words.length > i + 1) {
+                    Long idFollower = findIdByWordInNeurons(words[i + 1]);
                     neuronMatrix.add(id, idFollower);
                 } else {
                     neuronMatrix.add(id);
@@ -61,20 +62,22 @@ public class Analyser {
      * @param words
      */
     private long findIdByWordInNeurons(String word) {
-        if (neurons.findOneByContent(word.getBytes()) == null) {
-            neurons.save(new Neuron(word.getBytes()));
+        List<Neuron> findByContent = neurons.findByNeuronTypAndContent(NeuronTyp.TEXT, word.getBytes());
+        if (findByContent == null) {
+            return neurons.save(new Neuron(NeuronTyp.TEXT, word.getBytes())).getId();
         }
-        return neurons.findOneByContent(word.getBytes()).getId();
+        return findByContent.get(0).getId();
     }
 
     /**
      * @param words
      */
     private Neuron findWordInNeurons(String word) {
-        if (neurons.findOneByContent(word.getBytes()) == null) {
-            neurons.save(new Neuron(word.getBytes()));
+        List<Neuron> findByContent = neurons.findByNeuronTypAndContent(NeuronTyp.TEXT, word.getBytes());
+        if (findByContent == null) {
+            return neurons.save(new Neuron(NeuronTyp.TEXT, word.getBytes()));
         }
-        return neurons.findOneByContent(word.getBytes());
+        return findByContent.get(0);
     }
 
     /**
@@ -89,8 +92,8 @@ public class Analyser {
         for (String[] words : splitedText) {
             for (String word : words) {
                 // We add only unknown words
-                if (neurons.findOneByContent(word.getBytes()) == null) {
-                    neurons.save(new Neuron(word.getBytes()));
+                if (neurons.findByNeuronTypAndContent(NeuronTyp.TEXT, word.getBytes()) == null) {
+                    neurons.save(new Neuron(NeuronTyp.TEXT, word.getBytes()));
                 }
                 output.add(findWordInNeurons(word));
             }
@@ -143,7 +146,7 @@ public class Analyser {
                 if (ArrayUtils.contains(stopwords, word) || word.isEmpty()) {
                     words = (String[]) ArrayUtils.removeElement(words, word);
                 } else {
-                    neurons.save(new Neuron(word.getBytes()));
+                    neurons.save(new Neuron(NeuronTyp.TEXT, word.getBytes()));
                 }
             }
             out.add(words);

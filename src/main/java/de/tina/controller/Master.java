@@ -10,6 +10,7 @@ import org.apache.commons.lang.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import de.tina.container.Neuron;
 import de.tina.container.NeuronMatrix;
 import de.tina.container.NeuronRepository;
 
@@ -135,17 +136,17 @@ public class Master {
     }
 
     /**
-     * @param id
-     * @return
-     */
-    public byte[] getContentOfNeuron(Long id) {
-        return neurons.findOne(id).getContent();
-    }
-
-    /**
      * @return
      */
     public Map<String, NeuronMatrix> getKnowledge() {
         return knowledge;
+    }
+
+    /**
+     * @param id
+     * @return
+     */
+    public Neuron getNeuron(Long id) {
+        return neurons.findOne(id);
     }
 }

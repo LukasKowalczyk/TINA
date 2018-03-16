@@ -1,12 +1,14 @@
 package de.tina.controller;
 
 import java.util.Map;
+import java.util.Map.Entry;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+import de.tina.container.Neuron;
 import de.tina.container.NeuronMatrix;
 
 @RestController
@@ -34,37 +36,48 @@ public class Tina {
         return master.getNeuronMatrix(theme);
     }
 
-    @GetMapping("/getContent")
+    @GetMapping("/getNeuron")
     @ResponseBody
-    public byte[] getContent(@RequestParam(name = "id", required = true) Long id) {
-        return master.getContentOfNeuron(id);
+    public Neuron getNeuron(@RequestParam(name = "id", required = true) Long id) {
+        return master.getNeuron(id);
     }
 
     @GetMapping("/printOnConsol")
     @ResponseBody
-    public void printOnConsol() {
+    public String printOnConsol() {
+        String output = "";
         Map<String, NeuronMatrix> knowledge = master.getKnowledge();
-        knowledge.entrySet().forEach(s -> {
-            System.out.println(s.getKey());
-            System.out.println(print(s.getValue()));
-        });
+        for (Entry<String, NeuronMatrix> s : knowledge.entrySet()) {
+            if (s != null) {
+                output += "<h3>" + s.getKey() + "</h3><br>";
+                output += "<table border=\"1\">";
+                output += print(s.getValue());
+                output += "</table>" + "<br>" + "<br>";
+            }
+        }
+
+        return output;
+
     }
 
     public String print(NeuronMatrix neuronMatrix) {
 
-        String ajinmatrix = "";
-        String header = StringUtils.repeat(" ", 8) + "|";
+        String header = "<tr><td></td>";
         for (Long n : neuronMatrix.getNeuronIds()) {
-            header += StringUtils.leftPad(new String(getContent(n)), 8, " ") + "|";
+            Neuron neuron = getNeuron(n);
+            header += "<th>" + StringUtils.leftPad(new String(neuron.getContent()), 8, " ") + "</th>";
         }
-        header += "\n";
+        header += "</tr>";
+
+        String ajinmatrix = "";
         for (int i = 0; i < neuronMatrix.getAdjiazenMatrix().length; i++) {
-            String row = StringUtils.leftPad(new String(getContent(neuronMatrix.getNeuronIds()[i])), 8, " ") + "|";
+            String row = "<tr><td>"
+                + StringUtils.leftPad(new String(getNeuron(neuronMatrix.getNeuronIds()[i]).getContent()), 8, " ") + "</td>";
             for (int j = 0; j < neuronMatrix.getAdjiazenMatrix().length; j++) {
-                row += StringUtils.leftPad(String.valueOf(neuronMatrix.getAdjiazenMatrix()[i][j]), 8, " ") + "|";
+                row += "<td>" + StringUtils.leftPad(String.valueOf(neuronMatrix.getAdjiazenMatrix()[i][j]), 8, " ") + "</td>";
             }
-            row += "\n";
-            ajinmatrix += row;
+            ;
+            ajinmatrix += row + "</tr>";
         }
 
         return header + ajinmatrix;
