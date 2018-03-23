@@ -1,10 +1,13 @@
 package de.tina.container;
 
 import java.util.Arrays;
+import javax.persistence.Entity;
+import javax.persistence.Id;
 import org.apache.commons.lang.ArrayUtils;
 
+@Entity
 public class NeuronMatrix {
-
+    @Id
     private String name;
 
     private int max;
