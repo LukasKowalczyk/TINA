@@ -1,19 +1,22 @@
 package de.tina;
 
 import static org.junit.Assert.assertEquals;
-import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit4.SpringRunner;
 import de.tina.container.NeuronMatrix;
 import de.tina.controller.Memory;
-import de.tina.knowledge.JsonFilenameFilter;
 
+@RunWith(SpringRunner.class)
+@SpringBootTest
 public class MemoryTest {
-    private static final File TEST_SOURCER_PATH = new File("D:\\test\\");
 
     @Autowired
+
     private Memory memory;
 
     private Map<String, NeuronMatrix> knowledge = new HashMap<>();
@@ -29,16 +32,14 @@ public class MemoryTest {
     }
 
     public void tearDownAfter() {
-        for (File file : TEST_SOURCER_PATH.listFiles(new JsonFilenameFilter())) {
-            file.delete();
-        }
+        memory.deleteAll();
     }
 
     @Test
     public void persist() {
         setUpBefore();
         memory.persist(knowledge);
-        assertEquals(TEST_SOURCER_PATH.list(new JsonFilenameFilter()).length, 2);
+        assertEquals(memory.remember().size(), 2);
         tearDownAfter();
     }
 

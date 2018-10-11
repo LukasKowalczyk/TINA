@@ -40,7 +40,7 @@ public class Master {
     }
 
     /**
-     * Ask the master what the text is.
+     * Ask the master what kind of text it is.
      * @param text
      * @return a map of hits what kind of themes the text is with the percents of hit
      */
@@ -120,31 +120,39 @@ public class Master {
         if (!knowledge.containsKey(theme)) {
             knowledge.put(theme, new NeuronMatrix(theme));
         }
-        // System.out.println("I learning that >" + text + "< is >" + theme +
-        // "<!");
+        // Now we analyse the Text and update it in our knowledge
         NeuronMatrix knowledgeBase = analyser.fillTheKnowledgeBase(text, knowledge.get(theme));
         knowledge.put(theme, knowledgeBase);
     }
 
+    /**
+     * We save our knowledge
+     */
     public void persist() {
         memory.persist(knowledge);
         knowledge = memory.remember();
     }
 
+    /**
+     * Gives you a matrix of the theme
+     * @param theme
+     * @return a martix of neurons or <b>null</b>
+     */
     public NeuronMatrix getNeuronMatrix(String theme) {
         return knowledge.get(theme);
     }
 
     /**
-     * @return
+     * @return the whole knowledge
      */
     public Map<String, NeuronMatrix> getKnowledge() {
         return knowledge;
     }
 
     /**
+     * find a neuron by id
      * @param id
-     * @return
+     * @return a neuron
      */
     public Neuron getNeuron(Long id) {
         return neurons.findOne(id);

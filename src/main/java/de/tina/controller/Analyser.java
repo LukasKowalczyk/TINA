@@ -27,7 +27,7 @@ public class Analyser {
     private String stopSymbols;
 
     @Autowired
-    private NeuronRepository neurons;
+    private NeuronRepository neuronRepository;
 
     @PostConstruct
     public void init() {
@@ -58,24 +58,14 @@ public class Analyser {
         return neuronMatrix;
     }
 
-    /**
-     * @param words
-     */
     private long findIdByWordInNeurons(String word) {
-        List<Neuron> findByContent = neurons.findByNeuronTypAndContent(NeuronTyp.TEXT, word.getBytes());
-        if (findByContent == null) {
-            return neurons.save(new Neuron(NeuronTyp.TEXT, word.getBytes())).getId();
-        }
-        return findByContent.get(0).getId();
+        return findWordInNeurons(word).getId();
     }
 
-    /**
-     * @param words
-     */
     private Neuron findWordInNeurons(String word) {
-        List<Neuron> findByContent = neurons.findByNeuronTypAndContent(NeuronTyp.TEXT, word.getBytes());
+        List<Neuron> findByContent = neuronRepository.findByNeuronTypAndContent(NeuronTyp.TEXT, word.getBytes());
         if (findByContent == null) {
-            return neurons.save(new Neuron(NeuronTyp.TEXT, word.getBytes()));
+            return neuronRepository.save(new Neuron(NeuronTyp.TEXT, word.getBytes()));
         }
         return findByContent.get(0);
     }
@@ -92,8 +82,8 @@ public class Analyser {
         for (String[] words : splitedText) {
             for (String word : words) {
                 // We add only unknown words
-                if (neurons.findByNeuronTypAndContent(NeuronTyp.TEXT, word.getBytes()) == null) {
-                    neurons.save(new Neuron(NeuronTyp.TEXT, word.getBytes()));
+                if (neuronRepository.findByNeuronTypAndContent(NeuronTyp.TEXT, word.getBytes()) == null) {
+                    neuronRepository.save(new Neuron(NeuronTyp.TEXT, word.getBytes()));
                 }
                 output.add(findWordInNeurons(word));
             }
@@ -101,7 +91,7 @@ public class Analyser {
         return output.toArray(new Long[output.size()]);
     }
 
-    private String deleteStopwords(String text) {
+    private String deleteStopwordsFromText(String text) {
         for (String stopword : stopwords) {
             text = text.replaceAll("\\b" + stopword.toLowerCase() + "\\b", "");
         }
@@ -129,7 +119,7 @@ public class Analyser {
         text = text.replaceAll(stopSymbols, "");
 
         // Delete the stopwords
-        text = deleteStopwords(text).trim();
+        text = deleteStopwordsFromText(text).trim();
         if (text.isEmpty()) {
             return out;
         }
@@ -146,7 +136,7 @@ public class Analyser {
                 if (ArrayUtils.contains(stopwords, word) || word.isEmpty()) {
                     words = (String[]) ArrayUtils.removeElement(words, word);
                 } else {
-                    neurons.save(new Neuron(NeuronTyp.TEXT, word.getBytes()));
+                    neuronRepository.save(new Neuron(NeuronTyp.TEXT, word.getBytes()));
                 }
             }
             out.add(words);

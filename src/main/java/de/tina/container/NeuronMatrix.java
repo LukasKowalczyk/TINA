@@ -16,6 +16,13 @@ public class NeuronMatrix {
 
     private int[][] adjiazenMatrix;
 
+    public NeuronMatrix() {
+        this.max = 0;
+        this.name = "";
+        this.neuronIds = new Long[0];
+        this.adjiazenMatrix = new int[0][0];
+    }
+
     /**
      * @param name
      */

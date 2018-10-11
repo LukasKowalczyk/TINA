@@ -12,7 +12,7 @@ import de.tina.container.NeuronMatrixRepository;
 public class Memory {
 
     @Autowired
-    private NeuronMatrixRepository neuronMatrix;
+    private NeuronMatrixRepository neuronMatrixRepository;
 
     /**
      * Loads the knowledge of the sourcePath
@@ -21,7 +21,7 @@ public class Memory {
     public Map<String, NeuronMatrix> remember() {
         Map<String, NeuronMatrix> knowledge = new HashMap<>();
         // load every JSON-File
-        for (NeuronMatrix neuronMatrix : this.neuronMatrix.findAll()) {
+        for (NeuronMatrix neuronMatrix : this.neuronMatrixRepository.findAll()) {
 
             knowledge.put(neuronMatrix.getName(), neuronMatrix);
         }
@@ -38,8 +38,15 @@ public class Memory {
         Iterator<String> i = knowledge.keySet().iterator();
         while (i.hasNext()) {
             NeuronMatrix neuronMatrix = knowledge.get(i.next());
-            this.neuronMatrix.save(neuronMatrix);
+            this.neuronMatrixRepository.save(neuronMatrix);
         }
+    }
+
+    /**
+     * We delete every matrix
+     */
+    public void deleteAll() {
+        neuronMatrixRepository.deleteAll();
     }
 
 }
