@@ -9,4 +9,7 @@ public interface NeuronRepository extends CrudRepository<Neuron, Long> {
 
     List<Neuron> findByNeuronTypAndContent(NeuronTyp neurontyp, byte[] cotnent);
 
+    @Override
+    List<Neuron> findAll();
+
 }

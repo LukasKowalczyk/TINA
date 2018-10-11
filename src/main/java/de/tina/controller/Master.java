@@ -30,7 +30,7 @@ public class Master {
     private Memory memory;
 
     @Autowired
-    private NeuronRepository neurons;
+    private NeuronRepository neuronRepository;
 
     private Map<String, NeuronMatrix> knowledge;
 
@@ -155,6 +155,10 @@ public class Master {
      * @return a neuron
      */
     public Neuron getNeuron(Long id) {
-        return neurons.findOne(id);
+        return neuronRepository.findOne(id);
+    }
+
+    public List<Neuron> getAllNeuron() {
+        return neuronRepository.findAll();
     }
 }
